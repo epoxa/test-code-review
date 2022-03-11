@@ -1,3 +1,14 @@
+# Code review
+
+The overall impression is the code must die :) sorry
+
+I literally can not detect all the flaws but the main are:
+* Total ignoring input data validation
+* Not using PDO parameters. Allowing SQL injections
+* Not declaring arguments and return types for methods (and possible exceptions in PHPDoc blocks)
+* Not always handling obvious exceptions
+* Not using psalm or any other code style fixer/linter
+
 # REST API for managing project and tasks
 
 The API to manage project ans tasks in Database
@@ -68,5 +79,5 @@ Create task for project
       }  
     ```
 
-+ Response 201 (application/json)
++ Response 201 (application/json) //  json assumes response body. What should it contain? Only this task with new id?
 + Response 404  

@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Controller;
+namespace Api\Controller; // Wrong namespace. Should be App instead of Api
 
 use App\Model;
 use App\Storage\DataStorage;
@@ -23,11 +23,12 @@ class ProjectController
 
     /**
      * @param Request $request
-     * 
+     *
      * @Route("/project/{id}", name="project", method="GET")
      */
-    public function projectAction(Request $request)
+    public function projectAction(Request $request) // Declare return type
     {
+        // Use JsonResponse in all cases
         try {
             $project = $this->storage->getProjectById($request->get('id'));
 
@@ -44,7 +45,7 @@ class ProjectController
      *
      * @Route("/project/{id}/tasks", name="project-tasks", method="GET")
      */
-    public function projectTaskPagerAction(Request $request)
+    public function projectTaskPagerAction(Request $request) // Declare return type
     {
         $tasks = $this->storage->getTasksByProjectId(
             $request->get('id'),
@@ -52,23 +53,25 @@ class ProjectController
             $request->get('offset')
         );
 
-        return new Response(json_encode($tasks));
+        return new Response(json_encode($tasks)); // Use JsonResponse or at least add ext-json to composer.json.
     }
 
     /**
      * @param Request $request
      *
-     * @Route("/project/{id}/tasks", name="project-create-task", method="PUT")
+     * @Route("/project/{id}/tasks", name="project-create-task", method="PUT") // Not PUT but POST (see README.md)
      */
-    public function projectCreateTaskAction(Request $request)
+    public function projectCreateTaskAction(Request $request) // Add JsonResponse as return type
     {
+	// All the body was indented with tabs (not spaces). PSR-2 violation
 		$project = $this->storage->getProjectById($request->get('id'));
-		if (!$project) {
-			return new JsonResponse(['error' => 'Not found']);
+		if (!$project) { // It's impossible. Catch NotFoundException instead
+			return new JsonResponse(['error' => 'Not found']); // Consider declare a ProjectNotFoundJsonResponse after all
 		}
-		
-		return new JsonResponse(
-			$this->storage->createTask($_REQUEST, $project->getId())
-		);
+
+        // Catch a lot of Throwables after this
+		return new JsonResponse( // Add ->jsonSerialize() after argument
+			$this->storage->createTask($_REQUEST, $project->getId()) // No!!! Use $request not $_REQUEST
+		); // Add status 201 as second parameter
     }
 }
